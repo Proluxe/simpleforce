@@ -292,7 +292,7 @@ func (client *Client) DownloadAttachment(attachmentId string, filepath string) e
 	return client.download(apiPath, filepath)
 }
 
-func (client *Client) download(apiPath string, filepath string) error {
+func (client *Client) download(apiPath string, filepath string) string {
 	// Get the data
 	httpClient := client.httpClient
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s%s", strings.TrimRight(client.instanceURL, "/"), apiPath), nil)
@@ -312,16 +312,7 @@ func (client *Client) download(apiPath string, filepath string) error {
 		return fmt.Errorf("ERROR: statuscode: %d, body: %s", resp.StatusCode, buf.String())
 	}
 
-	// Create the file
-	out, err := os.Create(filepath)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
-
-	// Write the body to file
-	_, err = io.Copy(out, resp.Body)
-	return err
+	return resp.Body
 }
 
 func parseHost(input string) string {
